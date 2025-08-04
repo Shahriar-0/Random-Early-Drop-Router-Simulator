@@ -4,8 +4,8 @@ uint64_t PacketGenerator::_ctr = 0;
 void PacketGenerator::start() { scheduleNext(0); }
 void PacketGenerator::reset() { _backoff = false; }
 
-PacketGenerator::PacketGenerator(int id, double rate, int dst, int bandwidth, Simulator* sim)
-    : QObject(sim), _id(id), _dst(dst), _rate(rate), _sim(sim), _dist(rate), _bandwidth(bandwidth), _uniform(0, 1) {
+PacketGenerator::PacketGenerator(int id, double rate, int dst, Simulator* sim)
+    : QObject(sim), _id(id), _dst(dst), _rate(rate), _sim(sim), _dist(rate), _uniform(0, 1) {
     connect(_sim, &Simulator::packetEvent, this, &PacketGenerator::handleEvent);
     connect(sim, &Simulator::finished, this, &PacketGenerator::reset);
 }

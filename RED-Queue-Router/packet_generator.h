@@ -20,7 +20,7 @@ class PacketGenerator : public QObject {
     bool _backoff{false};
 
 public:
-    PacketGenerator(int id, double rate, int dst, int bandwidth, Simulator* sim);
+    PacketGenerator(int id, double rate, int dst, Simulator* sim);
     void start();
 
 private slots:
