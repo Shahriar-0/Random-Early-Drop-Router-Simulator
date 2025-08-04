@@ -13,7 +13,7 @@ struct Event {
     int nodeId;
     PacketPtr pkt;
 
-    bool operator<(const Event& other) const { return time < other.time; }
+    bool operator>(const Event& other) const { return time > other.time; }
 };
 
 #endif
