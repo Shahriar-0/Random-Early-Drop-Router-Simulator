@@ -18,6 +18,8 @@ set(PROJECT_SOURCES
     event.h
     simulator.h
     simulator.cpp
+    queue.h
+    queue.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
