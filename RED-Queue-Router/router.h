@@ -14,7 +14,7 @@ class Router : public QObject {
     Simulator* _sim;
     struct Port {
         int nxt;
-        double rate, delay;
+        double rate, delay; // FIXME: maybe one of them is enough idk
         REDQueue queue;
         int dropped = 0, forwarded = 0;
 

@@ -10,7 +10,7 @@ using SimTime = double;
 class Packet {
     uint64_t _id;
     SimTime _creation_time;
-    size_t _size;
+    size_t _size; // ?: do we need fractional size or this would do?
     int _src, _dst;
     std::string _content;
 

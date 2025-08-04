@@ -5,7 +5,7 @@
 
 enum class EventType {
     ARRIVAL,
-    DEPARTURE,
+    DEPARTURE, // ended up not using this but still keep it just in case
     TIMER,
     RESUME,
 };

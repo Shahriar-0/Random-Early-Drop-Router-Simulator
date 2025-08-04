@@ -14,7 +14,7 @@ void Router::handleEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t) {
     if (nodeId != _id || type != EventType::ARRIVAL || !pkt) return;
 
     auto it = _ports.find(pkt->dst());
-    assert(it != _ports.end() && "Port not found");
+    assert(it != _ports.end() && "Port not found"); // FIXME: if things got shitty just return idk man qt is shit
     Port& port = it->second;
 
     bool dropped = !port.queue.offer(pkt);

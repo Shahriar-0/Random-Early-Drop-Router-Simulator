@@ -25,8 +25,9 @@ void PacketGenerator::onCongestion(int genId) {
 }
 
 void PacketGenerator::send(SimTime now) {
+    double transmissionDelay = 1.0 / _bandwidth; // FIXME: do something about this not sure
     auto pkt = std::make_shared<Packet>(_ctr++, now, 1024, _id, _dst);
-    _sim->schedule({EventType::ARRIVAL, now, _dst, pkt});
+    _sim->schedule({EventType::ARRIVAL, now + transmissionDelay, _dst, pkt});
     scheduleNext(now);
 }
 
