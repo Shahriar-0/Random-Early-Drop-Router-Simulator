@@ -28,6 +28,10 @@ set(PROJECT_SOURCES
     metrics.cpp
     visualization.h
     visualization.cpp
+    mainwindow.h
+    mainwindow.cpp
+    worker.h
+    worker.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

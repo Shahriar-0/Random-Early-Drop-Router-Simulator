@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QtCharts>
+
 #include "metrics.h"
 
 class Visualization : public QWidget {
