@@ -15,8 +15,8 @@ class Simulator : public QObject {
 
 public:
     Simulator(QObject* parent = nullptr) : QObject(parent) {}
-    void schedule(const Event& ev) { _pq.push(ev); }
-    SimTime now() const { return _currentTime; }
+    void schedule(const Event& ev);
+    SimTime now() const;
     void run(SimTime until);
 signals:
     void packetEvent(int nodeId, PacketPtr pkt, EventType type, SimTime time);

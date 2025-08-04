@@ -2,9 +2,11 @@
 #define PACKET_H
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 using SimTime = double;
+using PacketPtr = std::shared_ptr<Packet>;
 
 class Packet {
     uint64_t _id;
