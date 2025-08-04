@@ -24,7 +24,7 @@ void Router::handleEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t) {
     }
     else {
         port.forwarded++;
-        // emit metrics->record(port.queue.size(), port.dropped, port.forwarded, t);
+        emit metrics->record(pkt->dst(), port.queue.size(), port.dropped, port.forwarded, t);
         nextHop(port, t);
     }
 }

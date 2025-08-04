@@ -6,7 +6,7 @@
 
 #include "queue.h"
 #include "simulator.h"
-// #include "metrics.h"
+#include "metrics.h"
 
 class Router : public QObject {
     Q_OBJECT
