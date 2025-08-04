@@ -20,6 +20,8 @@ set(PROJECT_SOURCES
     simulator.cpp
     queue.h
     queue.cpp
+    packet_generator.h
+    packet_generator.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -63,7 +65,7 @@ set_target_properties(RED-Queue-Router PROPERTIES
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
+    # WIN32_EXECUTABLE TRUE
 )
 
 include(GNUInstallDirs)
