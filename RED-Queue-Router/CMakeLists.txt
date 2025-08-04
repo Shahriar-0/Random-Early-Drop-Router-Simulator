@@ -26,6 +26,8 @@ set(PROJECT_SOURCES
     router.cpp
     metrics.h
     metrics.cpp
+    visualization.h
+    visualization.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
