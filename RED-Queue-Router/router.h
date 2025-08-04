@@ -17,6 +17,9 @@ class Router : public QObject {
         double rate, delay;
         REDQueue queue;
         int dropped = 0, forwarded = 0;
+
+        Port(int nextHop, double rate, double delay, size_t cap, double wq, double minTh, double maxTh, double maxP)
+            : nxt(nextHop), rate(rate), delay(delay), queue(cap, wq, minTh, maxTh, maxP), dropped(0), forwarded(0) {}
     };
     std::unordered_map<int, Port> _ports;
 

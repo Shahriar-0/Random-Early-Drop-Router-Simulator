@@ -7,13 +7,16 @@ Router::Router(int id, Simulator* sim) : QObject(sim), _id(id), _sim(sim) {
 }
 
 void Router::addPort(int dest, double rate, double delay, size_t cap, double wq, double minTh, double maxTh, double maxP) {
-    _ports[dest] = Port{dest, rate, delay, REDQueue(cap, wq, minTh, maxTh, maxP)};
+    _ports.emplace(dest, Port(dest, rate, delay, cap, wq, minTh, maxTh, maxP));
 }
 
 void Router::handleEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t) {
     if (nodeId != _id || type != EventType::ARRIVAL || !pkt) return;
 
-    auto& port = _ports[pkt->dst()];
+    auto it = _ports.find(pkt->dst());
+    assert(it != _ports.end() && "Port not found");
+    Port& port = it->second;
+
     bool dropped = !port.queue.offer(pkt);
     if (dropped) {
         port.dropped++;
