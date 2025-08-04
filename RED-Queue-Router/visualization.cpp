@@ -53,8 +53,9 @@ void Visualization::plotTimeSeries(int portId) {
     chart->addSeries(dropSeries);
     chart->createDefaultAxes();
     chart->setTitle("Queue Length and Packet Drops");
-    chart->axisX()->setTitleText("Time (s)");
-    chart->axisY()->setTitleText("Queue Length");
+
+    chart->axes(Qt::Horizontal).first()->setTitleText("Time (s)");
+    chart->axes(Qt::Vertical).first()->setTitleText("Queue Length");
 
     _timeSeriesView->setChart(chart);
 }
@@ -77,9 +78,10 @@ void Visualization::plotDropFunction() {
     chart->addSeries(dropSeries);
     chart->createDefaultAxes();
     chart->setTitle("RED Drop Probability Function");
-    chart->axisX()->setTitleText("Queue Length");
-    chart->axisY()->setTitleText("Drop Probability");
-    chart->axisY()->setRange(0, 1.0);
+
+    chart->axes(Qt::Horizontal).first()->setTitleText("Queue Length");
+    chart->axes(Qt::Vertical).first()->setTitleText("Drop Probability");
+    chart->axes(Qt::Vertical).first()->setRange(0, 1.0);
 
     _dropFunctionView->setChart(chart);
 }
