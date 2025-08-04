@@ -20,7 +20,7 @@ class Metrics : public QObject {
     std::unordered_map<int, PortMetrics> _portMetrics;
 
 public:
-    explicit Metrics(QObject* parent);
+    explicit Metrics(QObject* parent = nullptr);
     QVector<double> getQueueLengths(int portId) const;
     QVector<int> getDroppedPackets(int portId) const;
     QVector<int> getForwardedPackets(int portId) const;
