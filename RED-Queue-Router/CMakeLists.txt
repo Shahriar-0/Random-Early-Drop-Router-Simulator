@@ -24,6 +24,8 @@ set(PROJECT_SOURCES
     packet_generator.cpp
     router.h
     router.cpp
+    metrics.h
+    metrics.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
