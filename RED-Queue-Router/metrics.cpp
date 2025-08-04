@@ -1,28 +1,44 @@
 #include "metrics.h"
 
-Metrics::Metrics(QObject* parent) : QObject(parent) {}
-Metrics* metrics = new Metrics;
+void Metrics::record(int portId, size_t queueLen, int dropped, int forwarded, SimTime timestamp) {
+    _portMetrics[portId].queueLengths.push_back(queueLen);
+    _portMetrics[portId].droppedPackets.push_back(dropped);
+    _portMetrics[portId].forwardedPackets.push_back(forwarded);
+    _portMetrics[portId].timestamps.push_back(timestamp);
 
-void Metrics::record(size_t qlen, int dropped, int fwd, SimTime t) {
-    _queueLens.push_back(qlen);
-    _drops.push_back(dropped);
-    _fwds.push_back(fwd);
-    _times.push_back(t);
-    emit updated(qlen, dropped, fwd, t);
+    emit updated(portId, queueLen, dropped, forwarded, timestamp);
 }
 
-QVector<size_t> Metrics::queueLengths() const {
-    return QVector<size_t>(_queueLens.begin(), _queueLens.end());
+QVector<double> Metrics::getQueueLengths(int portId) const {
+    auto it = _portMetrics.find(portId);
+    if (it != _portMetrics.end()) {
+        return QVector<double>(it->second.queueLengths.begin(), it->second.queueLengths.end());
+    }
+    return {};
 }
 
-QVector<int> Metrics::droppedPackets() const {
-    return QVector<int>(_drops.begin(), _drops.end());
+QVector<int> Metrics::getDroppedPackets(int portId) const {
+    auto it = _portMetrics.find(portId);
+    if (it != _portMetrics.end()) {
+        return QVector<int>(it->second.droppedPackets.begin(), it->second.droppedPackets.end());
+    }
+    return {};
 }
 
-QVector<int> Metrics::forwardedPackets() const {
-    return QVector<int>(_fwds.begin(), _fwds.end());
+QVector<int> Metrics::getForwardedPackets(int portId) const {
+    auto it = _portMetrics.find(portId);
+    if (it != _portMetrics.end()) {
+        return QVector<int>(it->second.forwardedPackets.begin(), it->second.forwardedPackets.end());
+    }
+    return {};
 }
 
-QVector<double> Metrics::timestamps() const {
-    return QVector<double>(_times.begin(), _times.end());
+QVector<double> Metrics::getTimestamps(int portId) const {
+    auto it = _portMetrics.find(portId);
+    if (it != _portMetrics.end()) {
+        return QVector<double>(it->second.timestamps.begin(), it->second.timestamps.end());
+    }
+    return {};
 }
+
+Metrics* metrics = new Metrics();

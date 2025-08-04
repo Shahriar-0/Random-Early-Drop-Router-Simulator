@@ -2,32 +2,38 @@
 #define METRICS_H
 
 #include <QObject>
-#include <QVector>
+#include <unordered_map>
 #include <vector>
-
+#include <QVector>
 #include "packet.h"
 
 class Metrics : public QObject {
     Q_OBJECT
-    std::vector<double> _queueLens;
-    std::vector<int> _drops, _fwds;
-    std::vector<SimTime> _times;
+
+    struct PortMetrics {
+        std::vector<size_t> queueLengths;
+        std::vector<int> droppedPackets;
+        std::vector<int> forwardedPackets;
+        std::vector<SimTime> timestamps;
+    };
+
+    std::unordered_map<int, PortMetrics> _portMetrics;
 
 public:
-    explicit Metrics(QObject* parent = nullptr);
+    explicit Metrics(QObject* parent = nullptr) : QObject(parent) {}
 
 public slots:
-    void record(size_t qlen, int dropped, int fwd, SimTime t);
+    void record(int portId, size_t queueLen, int dropped, int forwarded, SimTime timestamp);
 
 signals:
-    void updated(size_t queueLen, int dropped, int forwarded, SimTime timestamp);
+    void updated(int portId, size_t queueLen, int dropped, int forwarded, SimTime timestamp);
 
-    QVector<size_t> queueLengths() const;
-    QVector<int> droppedPackets() const;
-    QVector<int> forwardedPackets() const;
-    QVector<double> timestamps() const;
+    QVector<double> getQueueLengths(int portId) const;
+    QVector<int> getDroppedPackets(int portId) const;
+    QVector<int> getForwardedPackets(int portId) const;
+    QVector<double> getTimestamps(int portId) const;
 };
 
 extern Metrics* metrics;
 
-#endif // METRICS_H
+#endif
