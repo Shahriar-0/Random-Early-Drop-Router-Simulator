@@ -16,6 +16,8 @@ struct Event {
     SimTime time;
     int nodeId;
     PacketPtr pkt;
+
+    bool operator<(const Event& other) const { return time < other.time; }
 };
 
 #endif
