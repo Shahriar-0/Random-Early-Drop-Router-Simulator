@@ -1,5 +1,7 @@
 #include "metrics.h"
 
+Metrics::Metrics(QObject* parent = nullptr) : QObject(parent) {}
+
 void Metrics::record(int portId, size_t queueLen, int dropped, int forwarded, SimTime timestamp) {
     _portMetrics[portId].queueLengths.push_back(queueLen);
     _portMetrics[portId].droppedPackets.push_back(dropped);
