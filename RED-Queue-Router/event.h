@@ -3,9 +3,12 @@
 
 #include "packet.h"
 
-enum class EventType { ARRIVAL,
-                       DEPARTURE,
-                       TIMER };
+enum class EventType {
+    ARRIVAL,
+    DEPARTURE,
+    TIMER,
+    RESUME,
+};
 
 struct Event {
     EventType type;

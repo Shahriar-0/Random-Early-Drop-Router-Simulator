@@ -3,13 +3,14 @@
 
 #include <QObject>
 #include <random>
-#include "simulator.h"
+
 #include "packet.h"
-// #include "metrics.h"
+#include "simulator.h"
 
 class PacketGenerator : public QObject {
     Q_OBJECT
     int _id, _dst;
+    int _bandwidth;
     double _rate;
     Simulator* _sim;
     std::exponential_distribution<double> _dist;
@@ -19,11 +20,8 @@ class PacketGenerator : public QObject {
     bool _backoff{false};
 
 public:
-    PacketGenerator(int id, double rate, int dst, Simulator* sim);
+    PacketGenerator(int id, double rate, int dst, int bandwidth, Simulator* sim);
     void start();
-
-signals:
-    void congestion(int generatorId);
 
 private slots:
     void handleEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t);
@@ -31,6 +29,7 @@ private slots:
     void send(SimTime now);
     void scheduleNext(SimTime now);
     void reset();
+    void resumeGeneration();
 };
 
 #endif
