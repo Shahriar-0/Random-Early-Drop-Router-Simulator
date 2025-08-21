@@ -20,7 +20,7 @@ void PacketGenerator::handleEvent(int nodeId, PacketPtr pkt, EventType type, Sim
 void PacketGenerator::onCongestion(int genId) {
     if (genId != _id) return;
     _backoff = true;
-    double backoffInterval = _uniform(_rng) * 0.1;
+    double backoffInterval = _uniform(_rng) * 0.1; //? maybe too small
     _sim->schedule({EventType::RESUME, _sim->now() + backoffInterval, _id, nullptr});
 }
 

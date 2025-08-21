@@ -10,7 +10,6 @@
 class PacketGenerator : public QObject {
     Q_OBJECT
     int _id, _dst;
-    int _bandwidth; // ?: in bps maybe? do we even need this?
     double _rate;
     Simulator* _sim;
     std::exponential_distribution<double> _dist;

@@ -26,12 +26,12 @@ set(PROJECT_SOURCES
     router.cpp
     metrics.h
     metrics.cpp
-    visualization.h
-    visualization.cpp
-    mainwindow.h
-    mainwindow.cpp
-    worker.h
-    worker.cpp
+    # visualization.h
+    # visualization.cpp
+    # mainwindow.h
+    # mainwindow.cpp
+    # worker.h
+    # worker.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

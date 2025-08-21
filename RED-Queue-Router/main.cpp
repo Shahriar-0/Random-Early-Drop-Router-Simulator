@@ -1,6 +1,6 @@
 #include <QApplication>
 
-#include "mainwindow.h"
+// #include "mainwindow.h"
 
 // TODO: use these four in initialization of router and packet generator
 // for packet generator obviously should use the first two
@@ -13,7 +13,8 @@ constexpr int RECEIVER_PROPAGATION_DELAY = TIME_SCALE;
 
 int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    // TODO:
+    // MainWindow w;
+    // w.show();
     return a.exec();
 }
