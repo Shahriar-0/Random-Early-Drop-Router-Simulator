@@ -18,9 +18,10 @@ class PacketGenerator : public QObject {
     std::mt19937 _rng{std::random_device{}()};
     static uint64_t _ctr;
     bool _backoff{false};
+    int _transmissionDelay, _propagationDelay;
 
 public:
-    PacketGenerator(int id, double rate, int dst, Simulator* sim);
+    PacketGenerator(int id, double rate, int dst, Simulator* sim, int transmissionDelay, int propagationDelay);
     void start();
 
 private slots:

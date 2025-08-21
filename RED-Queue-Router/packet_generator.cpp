@@ -4,8 +4,8 @@ uint64_t PacketGenerator::_ctr = 0;
 void PacketGenerator::start() { scheduleNext(0); }
 void PacketGenerator::reset() { _backoff = false; }
 
-PacketGenerator::PacketGenerator(int id, double rate, int dst, Simulator* sim)
-    : QObject(sim), _id(id), _dst(dst), _rate(rate), _sim(sim), _dist(rate), _uniform(0, 1) {
+PacketGenerator::PacketGenerator(int id, double rate, int dst, Simulator* sim, int transmissionDelay, int propagationDelay)
+    : QObject(sim), _id(id), _dst(dst), _rate(rate), _sim(sim), _transmissionDelay(transmissionDelay), _propagationDelay(propagationDelay), _dist(rate), _uniform(0, 1) {
     connect(_sim, &Simulator::packetEvent, this, &PacketGenerator::handleEvent);
     connect(sim, &Simulator::finished, this, &PacketGenerator::reset);
 }
@@ -25,9 +25,8 @@ void PacketGenerator::onCongestion(int genId) {
 }
 
 void PacketGenerator::send(SimTime now) {
-    double transmissionDelay = 1.0 / _bandwidth; // FIXME: do something about this not sure
     auto pkt = std::make_shared<Packet>(_ctr++, now, 1024, _id, _dst);
-    _sim->schedule({EventType::ARRIVAL, now + transmissionDelay, _dst, pkt});
+    _sim->schedule({EventType::ARRIVAL, now + _transmissionDelay + _propagationDelay, _dst, pkt});
     scheduleNext(now);
 }
 
