@@ -5,9 +5,10 @@
 
 enum class EventType {
     ARRIVAL,
-    DEPARTURE, // ended up not using this but still keep it just in case
+    DEPARTURE, // ended up not using this but still keeping it just in case
     TIMER,
     RESUME,
+    RECEIVED,
 };
 
 struct Event {
