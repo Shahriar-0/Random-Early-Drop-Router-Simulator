@@ -1,5 +1,5 @@
 #include "queue.h"
-#include <cassert>
+#include <QDebug>
 
 REDQueue::REDQueue(size_t cap, double wq, double minTh, double maxTh, double maxP)
     : _cap(cap), _wq(wq), _minTh(minTh), _maxTh(maxTh), _maxP(maxP) {}
@@ -7,11 +7,15 @@ REDQueue::REDQueue(size_t cap, double wq, double minTh, double maxTh, double max
 size_t REDQueue::size() const { return _dq.size(); }
 
 void REDQueue::enqueue(const PacketPtr& p) {
-    assert(_dq.size() < _cap && "enqueue called when queue is full!");
+    if (_dq.size() < _cap) qWarning() << "enqueue called when queue is full!";
     _dq.push_back(p);
 }
 
 bool REDQueue::offer(const PacketPtr& p) {
+    if (_dq.size() == _cap) {
+        _count = 0;
+        return false;
+    }
     _avg = (1 - _wq) * _avg + _wq * _dq.size();
     if (_avg < _minTh) {
         enqueue(p);

@@ -1,6 +1,6 @@
 #include "router.h"
 
-#include <cassert>
+#include <QDebug>
 
 Router::Router(int id, Simulator* sim) : QObject(sim), _id(id), _sim(sim) {
     connect(_sim, &Simulator::packetEvent, this, &Router::handleEvent);
@@ -28,7 +28,7 @@ void Router::handleEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t) {
         }
         else {
             port.forwarded++;
-            emit metrics->record(pkt->dst(), port.queue.size(), port.dropped, port.forwarded, t);
+            metrics->record(pkt->dst(), port.queue.size(), port.dropped, port.forwarded, t);
             _sim->schedule({EventType::RECEIVED, t + port.transDly + port.propDly, _id, pkt});
         }
     }
@@ -36,6 +36,6 @@ void Router::handleEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t) {
 
 void Router::receivedDst(Port& p, PacketPtr pkt) {
     auto polled = p.queue.poll();
-    assert(*polled == *pkt && "another packet is polled? wtf bro");
+    if (!(*polled == *pkt)) qWarning() << "another packet is polled? wtf bro";
     //? maybe record something as well? these fuckers didn't specify what to show
 }

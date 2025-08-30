@@ -25,8 +25,6 @@ public:
     QVector<int> getDroppedPackets(int portId) const;
     QVector<int> getForwardedPackets(int portId) const;
     QVector<double> getTimestamps(int portId) const;
-
-public slots:
     void record(int portId, size_t queueLen, int dropped, int forwarded, SimTime timestamp);
 
 signals:
