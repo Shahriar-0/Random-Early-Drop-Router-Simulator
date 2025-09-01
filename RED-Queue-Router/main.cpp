@@ -50,22 +50,27 @@ int main(int argc, char *argv[]) {
 
     Router router(100, &sim);
     router.setBufferCap(6);
-    router.setOutput(200, 1.0 /* pkts/unit */, 0.0);
+    router.setOutput(200, 1.0, 0.0);
 
-    PacketGenerator genA(1, 100, 2.0 /* gen rate */, 2.0 /* link rate */, 0.0, &sim);
+    PacketGenerator genA(1, 100, 2.0, 2.0, 0.0, &sim);
     PacketGenerator genB(2, 100, 2.0, 2.0, 0.0, &sim);
+    PacketGenerator genC(1, 100, 2.0, 2.0, 0.0, &sim);
+
 
     if (seed != 0) {
         genA.setSeed(seed + 1);
         genB.setSeed(seed + 2);
+        genC.setSeed(seed + 3);
     }
 
     QObject::connect(&router, &Router::congested, &genA, &PacketGenerator::onCongested);
     QObject::connect(&router, &Router::congested, &genB, &PacketGenerator::onCongested);
+    QObject::connect(&router, &Router::congested, &genC, &PacketGenerator::onCongested);
 
 
     genA.start(0.0);
     genB.start(0.0);
+    genC.start(0.0);
 
     sim.run(until);
 
