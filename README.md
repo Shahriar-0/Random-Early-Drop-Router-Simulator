@@ -150,3 +150,21 @@ Serves as a straightforward data sink for collecting time-series data from the s
 
 6.  **Recording**:
     Every significant event (packet arrival, departure, or drop) triggers a call to `record(...)`. Following the completion of the `run()` method, the accumulated data is exported into CSV files, which are then processed by a Python helper script to generate plots that validate the configured RED curve's behavior.
+
+
+
+## Test Results
+
+Below plots are for --until 200 --seed 8121:
+
+samples=878
+total_forwarded=199
+total_dropped=477
+
+![alt text](plot_drops_by_queue_len_pre.png) 
+![alt text](plot_red_empirical_vs_theory-1.png) 
+![alt text](plot_dropped_cumulative.png) 
+![alt text](plot_forwarded_cumulative.png) 
+![alt text](plot_queue_length-1.png)
+![alt text](plot_dropped_events.png) 
+![alt text](plot_forwarded_events.png) 
