@@ -1,10 +1,5 @@
 # RED Queue Router
 
-
-We implemented a small, self-contained discrete-event simulator of a RED-enabled router fed by two Poisson traffic sources.
----
-
-
 ## Design Overview
 
 We modeled three things:
