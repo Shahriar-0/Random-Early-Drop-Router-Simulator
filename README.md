@@ -132,7 +132,7 @@ Note: `queue_len` in `events.csv` is the **post-event** size. The plotting scrip
 
 ---
 
-## Packet/Data Flow
+## Data Flow
 
 1. **Startup** (`main.cpp`)
    We create `Simulator`, `Metrics`, `Router` (cap=6, `txRate=1`), and two `PacketGenerator`s (rate=2 each). We connect `router.congested → gen.onCongested` for both sources. We call `gen.start(0.0)` and then `sim.run(until)`.
