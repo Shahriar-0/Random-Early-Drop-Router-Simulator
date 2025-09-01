@@ -3,38 +3,49 @@
 
 #include <QObject>
 #include <unordered_map>
-
-#include "metrics.h"
+#include <random>
 #include "queue.h"
 #include "simulator.h"
 
 class Router : public QObject {
     Q_OBJECT
-    int _id;
-    Simulator* _sim;
-    struct Port {
-        int nxt;
-        int transDly, propDly;
-        REDQueue queue; // technically we only use this queue for PC3 but let's keep the structure
-        int dropped = 0, forwarded = 0;
-
-        Port(int nextHop, int transDly, int propDly, size_t cap, double wq, double minTh, double maxTh, double maxP)
-            : nxt(nextHop), transDly(transDly), propDly(propDly), queue(cap, wq, minTh, maxTh, maxP), dropped(0), forwarded(0) {}
-    };
-    std::unordered_map<int, Port> _ports;
-
 public:
-    Router(int id, Simulator* sim);
-    void addPort(int dest, int transDly, int propDly, size_t cap, double wq, double minTh, double maxTh, double maxP);
+    explicit Router(int id, Simulator* sim, QObject* parent=nullptr);
+
+    struct Port {
+        int dest;
+        double txRate;
+        double propDelay;
+        BoundedQueue q;
+        int dropped{0};
+        int forwarded{0};
+        Port(int d, double tx, double prop, size_t cap)
+            : dest(d), txRate(tx), propDelay(prop), q(cap) {}
+    };
+
+    void addInput(int srcId, double txRate, double propDelay, size_t cap);
+    void setOutput(int destId, double txRate, double propDelay);
+    void setBufferCap(size_t cap);
+    double dropProb(size_t qlen) const;
 
 signals:
-    void congestion(int generatorId);
+    void congested();
 
-private slots:
-    void handleEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t);
+public slots:
+    void onEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t);
 
 private:
-    void receivedDst(Port& p, PacketPtr pkt);
+    void scheduleDequeue(SimTime now);
+    void tryDequeue(SimTime now);
+
+private:
+    int _id;
+    Simulator* _sim;
+    std::unordered_map<int, Port> _inputs;
+    Port* _output{nullptr};
+    size_t _bufferCap{6};
+    std::mt19937 _rng;
+    std::uniform_real_distribution<double> _ud{0.0, 1.0};
 };
 
-#endif
+#endif // ROUTER_H

@@ -1,35 +1,45 @@
-#ifndef PACKETGENERATOR_H
-#define PACKETGENERATOR_H
+#ifndef PACKET_GENERATOR_H
+#define PACKET_GENERATOR_H
 
 #include <QObject>
 #include <random>
-
-#include "packet.h"
+#include "event.h"
 #include "simulator.h"
 
 class PacketGenerator : public QObject {
     Q_OBJECT
-    int _id, _dst;
-    double _rate;
-    Simulator* _sim;
-    std::exponential_distribution<double> _dist;
-    std::uniform_real_distribution<double> _uniform;
-    std::mt19937 _rng{std::random_device{}()};
-    static uint64_t _ctr;
-    bool _backoff{false};
-    int _transmissionDelay, _propagationDelay;
+public:
+    PacketGenerator(int id, int dst, double rate, double txRate, double propDelay, Simulator* sim, QObject* parent=nullptr);
+
+public slots:
+    void onEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t);
+    void onCongested();
+    void resume();
 
 public:
-    PacketGenerator(int id, double rate, int dst, Simulator* sim, int transmissionDelay, int propagationDelay);
-    void start();
+    void start(SimTime at);
+    void setSeed(uint32_t seed);
 
-private slots:
-    void handleEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t);
-    void onCongestion(int genId);
-    void send(SimTime now);
+private:
     void scheduleNext(SimTime now);
-    void reset();
-    void resumeGeneration();
+    void send(SimTime now);
+
+private:
+    int _id;
+    int _dst;
+    double _genRate; // pkts per unit time
+    double _txRate;
+    double _propDelay;
+    Simulator* _sim;
+
+    bool   _backoff {false};
+    double _resumeAt {0.0};
+    double _lastResumeScheduled {0.0};
+    int    _ctr {0};
+
+    std::mt19937 _rng;
+    std::exponential_distribution<double> _exp;
+    std::uniform_real_distribution<double> _uni{0.5, 1.5};
 };
 
-#endif
+#endif // PACKET_GENERATOR_H

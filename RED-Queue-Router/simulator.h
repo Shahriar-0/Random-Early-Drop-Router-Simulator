@@ -2,25 +2,31 @@
 #define SIMULATOR_H
 
 #include <QObject>
-#include <memory>
 #include <queue>
 #include <vector>
-
 #include "event.h"
+#include "metrics.h"
 
 class Simulator : public QObject {
     Q_OBJECT
-    SimTime _currentTime{0.0};
-    std::priority_queue<Event, std::vector<Event>, std::greater<Event>> _pq;
+public:
+    explicit Simulator(QObject* parent=nullptr);
+    SimTime now() const noexcept { return _now; }
+    void schedule(const Event& e);
+    void run(SimTime until);
+
+signals:
+    void packetEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t);
+
+public slots:
+    void record(int portId, int queueLen, int dropped, int forwarded, SimTime timestamp);
 
 public:
-    Simulator(QObject* parent = nullptr) : QObject(parent) {}
-    void schedule(const Event& ev);
-    SimTime now() const;
-    void run(SimTime until);
-signals:
-    void packetEvent(int nodeId, PacketPtr pkt, EventType type, SimTime time);
-    void finished();
+    Metrics* metrics {nullptr};
+
+private:
+    SimTime _now {0.0};
+    std::priority_queue<Event, std::vector<Event>, std::greater<Event>> _pq;
 };
 
-#endif
+#endif // SIMULATOR_H

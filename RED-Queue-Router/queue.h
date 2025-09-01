@@ -1,28 +1,32 @@
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef BOUNDED_QUEUE_H
+#define BOUNDED_QUEUE_H
 
 #include <deque>
-#include <memory>
-#include <random>
+#include "event.h"
 
-#include "packet.h"
-
-class REDQueue {
-    size_t _cap;
-    double _wq, _minTh, _maxTh, _maxP;
-    double _avg{0};
-    uint64_t _count{0};
+class BoundedQueue {
     std::deque<PacketPtr> _dq;
-    std::mt19937 _rng{std::random_device{}()};
-
+    size_t _cap;
 public:
-    REDQueue(size_t cap, double wq, double minTh, double maxTh, double maxP);
-    bool offer(const PacketPtr& p);
-    PacketPtr poll();
-    size_t size() const;
+    explicit BoundedQueue(size_t cap=6) : _cap(cap) {}
+    size_t size()   const noexcept { return _dq.size(); }
+    size_t capacity() const noexcept { return _cap; }
+    bool empty()    const noexcept { return _dq.empty(); }
 
-private:
-    void enqueue(const PacketPtr& p);
+    bool push(PacketPtr p) {
+        if (_dq.size() >= _cap) return false;
+        _dq.push_back(std::move(p));
+        return true;
+    }
+
+    PacketPtr front() const { return _dq.empty() ? nullptr : _dq.front(); }
+
+    PacketPtr pop() {
+        if (_dq.empty()) return nullptr;
+        auto p = _dq.front();
+        _dq.pop_front();
+        return p;
+    }
 };
 
-#endif
+#endif // BOUNDED_QUEUE_H

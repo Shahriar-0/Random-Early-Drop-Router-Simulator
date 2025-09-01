@@ -1,41 +1,68 @@
 #include "packet_generator.h"
+#include "router.h"
+#include "packet.h"
 
-uint64_t PacketGenerator::_ctr = 0;
-void PacketGenerator::start() { scheduleNext(0); }
-void PacketGenerator::reset() { _backoff = false; }
-
-PacketGenerator::PacketGenerator(int id, double rate, int dst, Simulator* sim, int transmissionDelay, int propagationDelay)
-    : QObject(sim), _id(id), _dst(dst), _rate(rate), _sim(sim), _transmissionDelay(transmissionDelay), _propagationDelay(propagationDelay), _dist(rate), _uniform(0, 1) {
-    connect(_sim, &Simulator::packetEvent, this, &PacketGenerator::handleEvent);
-    connect(sim, &Simulator::finished, this, &PacketGenerator::reset);
+PacketGenerator::PacketGenerator(int id, int dst, double rate, double txRate, double propDelay, Simulator* sim, QObject* parent)
+    : QObject(parent), _id(id), _dst(dst), _genRate(rate), _txRate(txRate), _propDelay(propDelay), _sim(sim),
+      _rng(std::random_device{}()), _exp(rate) {
+    QObject::connect(_sim, &Simulator::packetEvent, this, &PacketGenerator::onEvent, Qt::UniqueConnection);
 }
 
-void PacketGenerator::handleEvent(int nodeId, PacketPtr pkt, EventType type, SimTime t) {
-    if (nodeId == _id) {
-        if (type == EventType::TIMER && !_backoff) send(t);
-        if (type == EventType::RESUME) resumeGeneration();
-    }
+void PacketGenerator::setSeed(uint32_t seed) {
+    _rng.seed(seed);
+    _exp = std::exponential_distribution<double>(_genRate);
 }
 
-void PacketGenerator::onCongestion(int genId) {
-    if (genId != _id) return;
-    _backoff = true;
-    double backoffInterval = _uniform(_rng) * 2.0 + 0.5;
-    _sim->schedule({EventType::RESUME, _sim->now() + backoffInterval, _id, nullptr});
-}
-
-void PacketGenerator::send(SimTime now) {
-    auto pkt = std::make_shared<Packet>(_ctr++, now, 1024, _id, _dst);
-    _sim->schedule({EventType::ARRIVAL, now + _transmissionDelay + _propagationDelay, _dst, pkt});
-    scheduleNext(now);
+void PacketGenerator::start(SimTime at) {
+    scheduleNext(at);
 }
 
 void PacketGenerator::scheduleNext(SimTime now) {
-    double dt = _dist(_rng);
+    if (_backoff) return;
+    double dt = _exp(_rng);
     _sim->schedule({EventType::TIMER, now + dt, _id, nullptr});
 }
 
-void PacketGenerator::resumeGeneration() {
+void PacketGenerator::send(SimTime now) {
+    if (_backoff) return;
+    auto pkt = std::make_shared<Packet>(_ctr++, now, 1024, _id, _dst);
+    double txDelay = 1.0 / _txRate;
+    _sim->schedule({EventType::ARRIVAL, now + txDelay + _propDelay, _dst, pkt});
+    scheduleNext(now);
+}
+
+void PacketGenerator::onEvent(int nodeId, PacketPtr, EventType type, SimTime t) {
+    if (type == EventType::TIMER && nodeId == _id) {
+        if (_backoff) {
+            if (t >= _resumeAt) {
+                _backoff = false;
+                _lastResumeScheduled = 0.0;
+                send(t);
+            } // else ignore early timer
+        } else {
+            send(t);
+        }
+    }
+}
+
+void PacketGenerator::onCongested() {
+    double wait = _uni(_rng) / _genRate;       // ~0.25..0.75 for rate=2
+    double deadline = _sim->now() + wait;
+    if (!_backoff) {
+        _backoff = true;
+        _resumeAt = deadline;
+        _lastResumeScheduled = deadline;
+        _sim->schedule({EventType::TIMER, deadline, _id, nullptr});
+    } else {
+        if (deadline > _resumeAt) _resumeAt = deadline;
+        if (deadline > _lastResumeScheduled) {
+            _lastResumeScheduled = deadline;
+            _sim->schedule({EventType::TIMER, deadline, _id, nullptr});
+        }
+    }
+}
+
+void PacketGenerator::resume() {
     _backoff = false;
     scheduleNext(_sim->now());
 }
