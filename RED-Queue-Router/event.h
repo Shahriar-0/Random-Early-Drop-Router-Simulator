@@ -1,23 +1,24 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include "packet.h"
+#include <memory>
 
-enum class EventType {
-    ARRIVAL,
-    DEPARTURE, // ended up not using this but still keeping it just in case
-    TIMER,
-    RESUME,
-    RECEIVED,
-};
+using SimTime = double;
+
+enum class EventType { ARRIVAL, DEPARTURE, TIMER };
+
+struct Packet;
+using PacketPtr = std::shared_ptr<Packet>;
 
 struct Event {
-    EventType type;
-    SimTime time;
-    int nodeId;
-    PacketPtr pkt;
+    EventType type {};
+    SimTime   time {0.0};
+    int       nodeId {0};
+    PacketPtr pkt {};
 
-    bool operator>(const Event& other) const { return time > other.time; }
+    bool operator>(const Event& other) const noexcept {
+        return time > other.time;
+    }
 };
 
-#endif
+#endif // EVENT_H
